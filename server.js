@@ -1,5 +1,8 @@
 const exp = require('express');
+
 const express = exp();
+express.use(exp.urlencoded({extended: false}));
+express.use(exp.json());
 const database = {
     users: [
        {
@@ -13,8 +16,8 @@ const database = {
        {
         id: '124',
         name: 'Sally',
-        email: 'john@gmail.com',
-        password: 'cookies',
+        email: 'sally@gmail.com',
+        password: 'bananas',
         entries: 0,
         joined: new Date()
        }
@@ -22,12 +25,18 @@ const database = {
 }
 
 express.get('/', (req, res)=>{
-    res.send('this is working')
+    
+    res.send('this is working');        
 })
 
 
 express.post('/signin',(req,res)=>{
-    res.json('signed in')
+    if(req.body.email === database.users[0].email &&
+        req.body.password === database.users[0].password){
+            res.json('success');
+    } else{
+        res.status(400).json('error logging in');
+    }
 })
 
 express.listen(3000,()=>{
