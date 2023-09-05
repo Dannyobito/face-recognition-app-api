@@ -1,8 +1,10 @@
 const exp = require('express');
-const bcrypt = require('bcrypt-nodejs')
+const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
 const express = exp();
 express.use(exp.urlencoded({extended: false}));
 express.use(exp.json());
+express.use(cors());
 const database = {
     users: [
        {
@@ -32,31 +34,35 @@ const database = {
 }
 
 express.get('/', (req, res)=>{
-    
     res.send(database.users);        
-})
+});
 
 
 express.post('/signin',(req,res)=>{
-    bcrypt.compare("apple", '$2a$10$e2oFKWu0dYw6/MLjQ6H28uMuoB6EZ1K2XKxbsBfLXS3AMf5vz3gq.', function(err, res) {
-        console.log('1',res);
-    });
-    bcrypt.compare("veggies", '$2a$10$e2oFKWu0dYw6/MLjQ6H28uMuoB6EZ1K2XKxbsBfLXS3AMf5vz3gq.', function(err, res) {
-        console.log('2',res);
-    });
-    if(req.body.email === database.users[0].email &&
-        req.body.password === database.users[0].password){
-            res.json('success');
-    } else{
+    // bcrypt.compare("apple", '$2a$10$e2oFKWu0dYw6/MLjQ6H28uMuoB6EZ1K2XKxbsBfLXS3AMf5vz3gq.', function(err, res) {
+    //     console.log('1',res);
+    // });
+    // bcrypt.compare("veggies", '$2a$10$e2oFKWu0dYw6/MLjQ6H28uMuoB6EZ1K2XKxbsBfLXS3AMf5vz3gq.', function(err, res) {
+    //     console.log('2',res);
+    // });
+    let correct = false;
+    database.users.forEach(user => {
+        if(req.body.email === user.email &&
+            req.body.password === user.password){
+                res.json(user);
+        }
+    })
+    if(!correct){
         res.status(400).json('error logging in');
     }
+    
 });
 express.post('/register',(req,res)=>{
     const {name,email,password} = req.body;
 
-    bcrypt.hash("bacon", null, null, function(err, hash) {
-       console.log(hash);
-    });
+    // bcrypt.hash("bacon", null, null, function(err, hash) {
+    //    console.log(hash);
+    // });
     
     database.users.push({
             id: '125',
@@ -66,11 +72,11 @@ express.post('/register',(req,res)=>{
             entries: 0,
             joined: new Date(),
     })
-    res.json(database.users[database.users.length-1])
+    res.json(database.users[database.users.length-1]);
 })
 express.get('/profile/:id',(req,res)=>{
-    const {id} = req.params
-    let found = false
+    const {id} = req.params;
+    let found = false;
     database.users.forEach(user=> {
         if(user.id === id){
             found = true;
@@ -87,7 +93,7 @@ express.put('/image',(req,res)=>{
     database.users.forEach(user=> {
         if(user.id === id){
             found = true;
-            user.entries++
+            user.entries++;
             return res.json(user.entries);
         }
     })
