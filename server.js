@@ -1,113 +1,35 @@
 const exp = require('express');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const knex = require('knex');
+const { handleRegister } = require('./controllers/register');
+const { handleSignin } = require('./controllers/signin');
+const { handleProfileGet } = require('./controllers/profile');
+const { handleImage } = require('./controllers/image');
+
 const express = exp();
 express.use(exp.urlencoded({extended: false}));
 express.use(exp.json());
 express.use(cors());
-const database = {
-    users: [
-       {
-        id: '123',
-        name: 'John',
-        email: 'john@gmail.com',
-        password: 'cookies',
-        entries: 0,
-        joined: new Date(),
-       },
-       {
-        id: '124',
-        name: 'Sally',
-        email: 'sally@gmail.com',
-        password: 'bananas',
-        entries: 0,
-        joined: new Date()
-       }
-    ],
-    login: [
-        {
-            id: '987',
-            hash: '',
-            email: 'john@gmail.com'
-        }
-    ]
-}
 
-express.get('/', (req, res)=>{
-    res.send(database.users);        
+const db = knex({
+    client: 'pg',
+    connection: {
+        host : '127.0.0.1',
+        user : 'postgres',
+        password : 'obito',
+        database: 'facerecognitionapp'
+    }
 });
 
+express.get('/', (req, res)=>{res.status(200).json("Success")});
+express.post('/signin',(req,res)=>{handleSignin(req,res,bcrypt,db)});
+express.post('/register',(req,res)=>{handleRegister(req,res,bcrypt,db)})
+express.get('/profile/:id',(req,res)=>{handleProfileGet(req,res,db)})
+express.put('/image',(req,res) => {handleImage(req,res,db)})
 
-express.post('/signin',(req,res)=>{
-    // bcrypt.compare("apple", '$2a$10$e2oFKWu0dYw6/MLjQ6H28uMuoB6EZ1K2XKxbsBfLXS3AMf5vz3gq.', function(err, res) {
-    //     console.log('1',res);
-    // });
-    // bcrypt.compare("veggies", '$2a$10$e2oFKWu0dYw6/MLjQ6H28uMuoB6EZ1K2XKxbsBfLXS3AMf5vz3gq.', function(err, res) {
-    //     console.log('2',res);
-    // });
-    let correct = false;
-    database.users.forEach(user => {
-        if(req.body.email === user.email &&
-            req.body.password === user.password){
-                res.json(user);
-        }
-    })
-    if(!correct){
-        res.status(400).json('error logging in');
-    }
-    
-});
-express.post('/register',(req,res)=>{
-    const {name,email,password} = req.body;
-
-    // bcrypt.hash("bacon", null, null, function(err, hash) {
-    //    console.log(hash);
-    // });
-    
-    database.users.push({
-            id: '125',
-            name: name,
-            email: email,
-            password: password,
-            entries: 0,
-            joined: new Date(),
-    })
-    res.json(database.users[database.users.length-1]);
-})
-express.get('/profile/:id',(req,res)=>{
-    const {id} = req.params;
-    let found = false;
-    database.users.forEach(user=> {
-        if(user.id === id){
-            found = true;
-            return res.json(user);
-        }
-    })
-    if(!found){
-        res.status(400).json("no such user");
-    }
-})
-express.put('/image',(req,res)=>{
-    const {id} = req.body;
-    let found = false;
-    database.users.forEach(user=> {
-        if(user.id === id){
-            found = true;
-            user.entries++;
-            return res.json(user.entries);
-        }
-    })
-    if(!found){
-        res.status(400).json("no such user");
-    }
-})
-
-
-
-// // Load hash from your password DB.
-
-express.listen(3000,()=>{
-    console.log('app is  running on port 3000');
+express.listen(3999,()=>{
+    console.log('app is  running on port 3999');
 });
 
 
