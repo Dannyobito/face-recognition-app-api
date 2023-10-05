@@ -11,6 +11,7 @@ const express = exp();
 express.use(exp.urlencoded({extended: false}));
 express.use(exp.json());
 express.use(cors());
+const PORT = process.env.PORT;
 
 const db = knex({
     client: 'pg',
@@ -29,8 +30,8 @@ express.get('/profile/:id',(req,res)=>{handleProfileGet(req,res,db)})
 express.put('/image',(req,res) => {handleImage(req,res,db)})
 express.post('/imageUrl',(req,res)=>handleImageUrl(req,res))
 
-express.listen(3999,()=>{
-    console.log('app is  running on port 3999');
+express.listen(PORT || 3999,()=>{
+    console.log(`app is  running on port ${PORT}`);
 });
 
 
