@@ -36,6 +36,7 @@ express.post('/imageUrl',(req,res)=>handleImageUrl(req,res))
 express.listen(PORT || 3999,()=>{
     console.log(`app is  running on port ${PORT||"3999"}`);
 });
+console.log(process.env.CLARIFAIAPIKEY);
 
 
 
