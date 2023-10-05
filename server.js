@@ -13,13 +13,16 @@ express.use(exp.json());
 express.use(cors());
 const PORT = process.env.PORT;
 
+
 const db = knex({
     client: 'pg',
     connection: {
-        host : '127.0.0.1',
-        user : 'postgres',
-        password : 'obito',
-        database: 'facerecognitionapp'
+        connectionString: `${process.env.DATABASE_URL}`,
+        host : `${process.env.DATABASE_HOST}`,
+        user : `${process.env.DATABASE_USER}`,
+        password : `${process.env.DATABASE_PASSWORD}` ,
+        database: 'facerecognitionapp',
+        rejectUnauthorized: false
     }
 });
 
@@ -31,7 +34,7 @@ express.put('/image',(req,res) => {handleImage(req,res,db)})
 express.post('/imageUrl',(req,res)=>handleImageUrl(req,res))
 
 express.listen(PORT || 3999,()=>{
-    console.log(`app is  running on port ${PORT}`);
+    console.log(`app is  running on port ${PORT||"3999"}`);
 });
 
 
