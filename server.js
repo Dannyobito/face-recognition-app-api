@@ -5,7 +5,7 @@ const knex = require('knex');
 const { handleRegister } = require('./controllers/register');
 const { handleSignin } = require('./controllers/signin');
 const { handleProfileGet } = require('./controllers/profile');
-const { handleImage } = require('./controllers/image');
+const { handleImage, handleImageUrl } = require('./controllers/image');
 
 const express = exp();
 express.use(exp.urlencoded({extended: false}));
@@ -27,6 +27,7 @@ express.post('/signin',(req,res)=>{handleSignin(req,res,bcrypt,db)});
 express.post('/register',(req,res)=>{handleRegister(req,res,bcrypt,db)})
 express.get('/profile/:id',(req,res)=>{handleProfileGet(req,res,db)})
 express.put('/image',(req,res) => {handleImage(req,res,db)})
+express.post('/imageUrl',(req,res)=>handleImageUrl(req,res))
 
 express.listen(3999,()=>{
     console.log('app is  running on port 3999');
